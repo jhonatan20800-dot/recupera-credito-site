@@ -1,13 +1,15 @@
-// server.js – API + SQLite + sessão (Render/Free On)
+// server.js – API + SQLite + Sessão + Rotas explícitas
+
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const Database = require('better-sqlite3');
 
-// Banco SQLite no disco (Render persiste enquanto o serviço existir)
-const db = new Database('data.db');
+const app = express();
+const ROOT = path.resolve(__dirname);
 
-// Cria tabela caso não exista
+// === Banco SQLite no disco ===
+const db = new Database('data.db');
 db.prepare(`
 CREATE TABLE IF NOT EXISTS leads (
   id INTEGER PRIMARY KEY,
@@ -22,13 +24,13 @@ CREATE TABLE IF NOT EXISTS leads (
   status TEXT DEFAULT 'Novo',
   notas TEXT,
   extra TEXT
-);`).run();
+)
+`).run();
 
-// App Express
-const app = express();
+// === Middlewares básicos ===
 app.use(express.json());
 
-// permitir hosts externos (proxy + CORS simples)
+// permitir hosts externos (CORS simples)
 app.enable('trust proxy');
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -37,56 +39,68 @@ app.use((req, res, next) => {
 
 // sessão simples
 app.use(session({
-  secret: 'recupera-recupera',
+  secret: 'recupera-credito',
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 1000 * 60 * 60 * 8 } // 8h
 }));
 
-// Servir arquivos estáticos do repositório (index.html, admin.html)
-app.use(express.static(path.join(__dirname)));
+// === Servir arquivos estáticos do repositório ===
+app.use(express.static(ROOT));
 
-// rota explícita pro painel admin
-app.get('/admin.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin.html'));
+// rotas explícitas pro painel/admin
+app.get('/admin', (_req, res) => {
+  res.sendFile(path.join(ROOT, 'admin.html'));
+});
+app.get('/admin.html', (_req, res) => {
+  res.sendFile(path.join(ROOT, 'admin.html'));
 });
 
-// login hardcoded
+// rota explícita pra home
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(ROOT, 'index.html'));
+});
+
+// exemplo de rota de API para leads
+app.get('/api/leads', (req, res) => {
+  const rows = db.prepare('SELECT * FROM leads').all();
+  res.json(rows);
+});
+
+// update status lead
+app.patch('/api/leads/:id', (req, res) => {
+  const { status } = req.body;
+  db.prepare('UPDATE leads SET status=?, updated_at=datetime("now") WHERE id=?')
+    .run(status, req.params.id);
+  res.json({ ok: true });
+});
+
+// login simples (ADMIN / recupera123)
 const USER = 'ADMIN';
 const PASS = 'recupera123';
 
 app.post('/login', (req, res) => {
   const { user, pass } = req.body;
   if (user === USER && pass === PASS) {
-    req.session.logged = true;
+    req.session.user = user;
     res.json({ ok: true });
   } else {
-    res.status(401).json({ error: 'invalid' });
+    res.status(401).json({ error: 'Login inválido' });
   }
 });
 
-// logout
 app.post('/logout', (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
 
-// API leads (apenas logado)
-app.get('/api/leads', (req, res) => {
-  if (!req.session.logged) return res.status(401).end();
-  const rows = db.prepare('SELECT * FROM leads ORDER BY created_at DESC').all();
-  res.json(rows);
+// debug: listar arquivos disponíveis
+app.get('/debug/files', (_req, res) => {
+  const fs = require('fs');
+  res.json(fs.readdirSync(ROOT));
 });
 
-app.patch('/api/leads/:id', (req, res) => {
-  if (!req.session.logged) return res.status(401).end();
-  const id = req.params.id;
-  const { status } = req.body;
-  db.prepare('UPDATE leads SET status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?').run(status, id);
-  res.json({ ok: true });
-});
-
-// inicia servidor
+// === Start Server ===
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-  console.log('Server running on port', PORT);
+  console.log('Servidor rodando na porta', PORT);
 });
