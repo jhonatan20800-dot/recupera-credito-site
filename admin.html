@@ -9,28 +9,32 @@
     :root{
       --brand:#e11d48; /* rose-600 */
       --brand-2:#f97316; /* amber-500 */
-      --ink:#0f172a;
-      --muted:#475569;
-      --card:#ffffff;
-      --bg:#f8fafc;
-      --border:#e2e8f0;
+      --ink:#e5e7eb;      /* texto principal */
+      --muted:#94a3b8;    /* texto secundário */
+      --card:#0f172a;     /* slate-900 */
+      --bg:#0b1020;       /* fundo */
+      --border:#1f2937;   /* slate-800 */
+      --card-soft:#111827;/* slate-900+ */
     }
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
     .brand-grad{background:linear-gradient(135deg,var(--brand),var(--brand-2))}
-    .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:.5rem;font-weight:700}
-    .b-novo{background:#eef2ff;color:#4338ca}
-    .b-contato{background:#fff7ed;color:#c2410c}
-    .b-qualificado{background:#ecfeff;color:#155e75}
-    .b-fechado{background:#ecfdf5;color:#065f46}
-    .b-descartado{background:#fef2f2;color:#991b1b}
+    .badge{font-size:.72rem;padding:.15rem .5rem;border-radius:.5rem;font-weight:700}
+    .b-novo{background:#312e81;color:#c7d2fe}
+    .b-contato{background:#7c2d12;color:#ffedd5}
+    .b-qualificado{background:#0f766e;color:#ecfeff}
+    .b-fechado{background:#065f46;color:#ecfdf5}
+    .b-descartado{background:#7f1d1d;color:#fee2e2}
     .row-new{animation:flash 1.2s ease-in-out 1}
-    @keyframes flash{0%{background:#fff7ed}100%{background:transparent}}
+    @keyframes flash{0%{background:#111827}100%{background:transparent}}
     .thead-sticky thead th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--border)}
     .table-dense td,.table-dense th{padding:.55rem .6rem}
-    .shadow-soft{box-shadow:0 6px 24px rgba(2,8,23,.06)}
+    .shadow-soft{box-shadow:0 12px 40px rgba(0,0,0,.35)}
     .card{background:var(--card);border:1px solid var(--border)}
+    .card-soft{background:var(--card-soft);border:1px solid var(--border)}
     .btn{transition:transform .05s ease}
     .btn:active{transform:scale(.98)}
+    input, select{background:#0b1220;border-color:var(--border);color:var(--ink)}
+    ::placeholder{color:#64748b}
   </style>
 </head>
 <body>
@@ -41,35 +45,35 @@
         <span class="inline-flex h-8 w-8 rounded-lg brand-grad"></span>
         <div class="leading-tight">
           <div class="font-black tracking-tight">RECUPERA <span class="text-[var(--brand)]">CRÉDITO</span></div>
-          <div class="text-xs text-slate-500 -mt-0.5">Painel administrativo</div>
+          <div class="text-xs text-[var(--muted)] -mt-0.5">Painel administrativo</div>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btn-export" class="btn text-sm px-3 py-1.5 rounded border">Exportar CSV</button>
-        <button id="btn-sair" class="btn text-sm px-3 py-1.5 rounded border">Sair</button>
+        <button id="btn-export" class="btn text-sm px-3 py-1.5 rounded border border-slate-700 hover:bg-slate-800">Exportar CSV</button>
+        <button id="btn-sair" class="btn text-sm px-3 py-1.5 rounded border border-slate-700 hover:bg-slate-800">Sair</button>
       </div>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
     <!-- LOGIN (modal central) -->
-    <section id="login" class="fixed inset-0 z-50 grid place-items-center bg-black/40">
+    <section id="login" class="fixed inset-0 z-50 grid place-items-center bg-black/60">
       <div class="card shadow-soft w-full max-w-md rounded-2xl overflow-hidden">
         <div class="brand-grad h-1.5 w-full"></div>
         <div class="p-6">
           <h1 class="text-xl font-extrabold mb-1">Acesso restrito</h1>
-          <p class="text-sm text-slate-500 mb-4">Use suas credenciais para entrar no painel.</p>
+          <p class="text-sm text-[var(--muted)] mb-4">Use suas credenciais para entrar no painel.</p>
           <form id="form-login" class="space-y-3">
             <div>
-              <label class="text-xs text-slate-500">Usuário</label>
+              <label class="text-xs text-[var(--muted)]">Usuário</label>
               <input name="user" class="w-full border rounded px-3 py-2" value="ADMIN" placeholder="Usuário">
             </div>
             <div>
-              <label class="text-xs text-slate-500">Senha</label>
+              <label class="text-xs text-[var(--muted)]">Senha</label>
               <input name="pass" class="w-full border rounded px-3 py-2" type="password" value="recupera123" placeholder="Senha">
             </div>
             <button class="w-full bg-[var(--brand)] hover:brightness-110 text-white rounded px-3 py-2 font-bold">Entrar</button>
-            <p class="text-xs text-slate-400">Login de exemplo: <b>ADMIN</b> / <b>recupera123</b></p>
+            <p class="text-xs text-[var(--muted)]">Login de exemplo: <b>ADMIN</b> / <b>recupera123</b></p>
           </form>
         </div>
       </div>
@@ -77,26 +81,26 @@
 
     <!-- APP -->
     <section id="app" class="hidden space-y-6">
-      <!-- RESUMO -->
+      <!-- CARDS DE MÉTRICA -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
         <div class="card rounded-xl p-4">
-          <div class="text-xs text-slate-500">Total</div>
+          <div class="text-xs text-[var(--muted)]">Total</div>
           <div id="m-total" class="text-2xl font-extrabold">0</div>
         </div>
         <div class="card rounded-xl p-4">
-          <div class="text-xs text-slate-500">Novo</div>
+          <div class="text-xs text-[var(--muted)]">Novo</div>
           <div id="m-novo" class="text-2xl font-extrabold">0</div>
         </div>
         <div class="card rounded-xl p-4">
-          <div class="text-xs text-slate-500">Em contato</div>
+          <div class="text-xs text-[var(--muted)]">Em contato</div>
           <div id="m-contato" class="text-2xl font-extrabold">0</div>
         </div>
         <div class="card rounded-xl p-4">
-          <div class="text-xs text-slate-500">Qualificado</div>
+          <div class="text-xs text-[var(--muted)]">Qualificado</div>
           <div id="m-qualificado" class="text-2xl font-extrabold">0</div>
         </div>
         <div class="card rounded-xl p-4">
-          <div class="text-xs text-slate-500">Fechado</div>
+          <div class="text-xs text-[var(--muted)]">Fechado</div>
           <div id="m-fechado" class="text-2xl font-extrabold">0</div>
         </div>
       </div>
@@ -123,9 +127,9 @@
           </select>
         </div>
         <div class="flex items-center justify-between mt-3">
-          <div class="text-xs text-slate-500">Autoatualização a cada <b>10s</b>.</div>
+          <div class="text-xs text-[var(--muted)]">Autoatualização a cada <b>10s</b>.</div>
           <div class="flex items-center gap-2">
-            <button id="btn-refresh" class="btn px-3 py-2 rounded bg-slate-900 text-white">Atualizar</button>
+            <button id="btn-refresh" class="btn px-3 py-2 rounded bg-slate-800 hover:bg-slate-700 text-white">Atualizar</button>
           </div>
         </div>
       </div>
@@ -133,7 +137,7 @@
       <!-- TABELA -->
       <div id="table-card" class="card rounded-xl overflow-hidden shadow-soft thead-sticky">
         <table class="w-full text-sm table-dense">
-          <thead class="bg-slate-100">
+          <thead class="bg-slate-800/70">
             <tr>
               <th class="text-left p-2">Quando</th>
               <th class="text-left p-2">Tipo</th>
@@ -149,20 +153,20 @@
           <tbody id="tbody"></tbody>
         </table>
 
-        <!-- SKELETON (carregando) -->
+        <!-- SKELETON -->
         <div id="loading" class="p-6 grid gap-2">
-          <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
-          <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
-          <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
+          <div class="h-3 bg-slate-800 animate-pulse rounded"></div>
+          <div class="h-3 bg-slate-800 animate-pulse rounded"></div>
+          <div class="h-3 bg-slate-800 animate-pulse rounded"></div>
         </div>
 
         <!-- VAZIO -->
-        <div id="empty" class="hidden p-10 text-center text-slate-500">
+        <div id="empty" class="hidden p-10 text-center text-[var(--muted)]">
           Nenhum registro encontrado com os filtros atuais.
         </div>
       </div>
 
-      <div class="flex items-center justify-between text-xs text-slate-500">
+      <div class="flex items-center justify-between text-xs text-[var(--muted)]">
         <div id="count">0 registro(s)</div>
         <div class="flex items-center gap-2">
           <span class="badge b-novo">Novo</span>
@@ -271,19 +275,19 @@
       tbody.innerHTML = rows.map(r=>{
         const isNew = !lastIds.has(r.id);
         return `
-        <tr class="border-t ${isNew?'row-new':''}">
+        <tr class="border-t border-slate-800 ${isNew?'row-new':''}">
           <td class="p-2 whitespace-nowrap">${dt(r.created_at)}</td>
           <td class="p-2">${r.tipo}</td>
           <td class="p-2">${r.nome||'-'}</td>
           <td class="p-2">
             ${(r.whatsapp||'-')}
-            ${r.whatsapp?`<button data-copy="${r.whatsapp}" class="btn ml-2 text-xs px-2 py-1 border rounded">copiar</button>`:''}
+            ${r.whatsapp?`<button data-copy="${r.whatsapp}" class="btn ml-2 text-xs px-2 py-1 border border-slate-700 rounded hover:bg-slate-800">copiar</button>`:''}
           </td>
           <td class="p-2">${r.cidade||'-'}</td>
           <td class="p-2">${r.tempo||'-'}</td>
           <td class="p-2">${r.limite!=null?r.limite:'-'}</td>
           <td class="p-2">
-            <select data-id="${r.id}" class="status border rounded px-2 py-1">
+            <select data-id="${r.id}" class="status border border-slate-700 rounded px-2 py-1 bg-slate-900">
               ${['Novo','Em contato','Qualificado','Fechado','Descartado'].map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}
             </select>
             <div class="mt-1">${badge(r.status||'Novo')}</div>
