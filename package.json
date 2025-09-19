@@ -1,7 +1,7 @@
 {
   "name": "recupera-credito-site",
   "version": "1.0.0",
-  "description": "Site + Admin (Render)",
+  "description": "Site + Admin no Render",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
