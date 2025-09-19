@@ -1,402 +1,196 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Admin — Recupera Crédito</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --brand:#e11d48; /* rose-600 */
-      --brand-2:#f97316; /* amber-500 */
-      --ink:#e5e7eb;      /* texto principal */
-      --muted:#94a3b8;    /* texto secundário */
-      --card:#0f172a;     /* slate-900 */
-      --bg:#0b1020;       /* fundo */
-      --border:#1f2937;   /* slate-800 */
-      --card-soft:#111827;/* slate-900+ */
+      --bg:#0f172a; --card:#101826; --line:#1f2937; --ink:#e5e7eb; --muted:#94a3b8;
+      --rose:#e11d48; --amber:#f97316; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
     }
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
-    .brand-grad{background:linear-gradient(135deg,var(--brand),var(--brand-2))}
-    .badge{font-size:.72rem;padding:.15rem .5rem;border-radius:.5rem;font-weight:700}
-    .b-novo{background:#312e81;color:#c7d2fe}
-    .b-contato{background:#7c2d12;color:#ffedd5}
-    .b-qualificado{background:#0f766e;color:#ecfeff}
-    .b-fechado{background:#065f46;color:#ecfdf5}
-    .b-descartado{background:#7f1d1d;color:#fee2e2}
-    .row-new{animation:flash 1.2s ease-in-out 1}
-    @keyframes flash{0%{background:#111827}100%{background:transparent}}
-    .thead-sticky thead th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--border)}
-    .table-dense td,.table-dense th{padding:.55rem .6rem}
-    .shadow-soft{box-shadow:0 12px 40px rgba(0,0,0,.35)}
-    .card{background:var(--card);border:1px solid var(--border)}
-    .card-soft{background:var(--card-soft);border:1px solid var(--border)}
-    .btn{transition:transform .05s ease}
-    .btn:active{transform:scale(.98)}
-    input, select{background:#0b1220;border-color:var(--border);color:var(--ink)}
-    ::placeholder{color:#64748b}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .logo{display:flex;gap:10px;align-items:center}
+    .dot{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--rose),var(--amber))}
+    .btn{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:#0b1220;color:#fff;cursor:pointer}
+    .btn--grad{background:linear-gradient(90deg,var(--rose),var(--amber));border:none;font-weight:800}
+    .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px} @media(max-width:960px){.grid{grid-template-columns:1fr 1fr}} @media(max-width:640px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+    .k strong{font-size:26px;display:block}
+    .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px} @media(max-width:960px){.filters{grid-template-columns:1fr 1fr}}
+    input,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0b1220;color:#fff}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-top:1px solid var(--line);text-align:left;font-size:14px}
+    thead th{position:sticky;top:0;background:#0b1220;z-index:2}
+    .status{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);display:inline-block}
+    .s-novo{background:#0b1220} .s-contato{background:#1e293b} .s-quali{background:#0f766e} .s-fechado{background:#14532d} .s-desc{background:#451a1a}
+    /* login modal */
+    .overlay{position:fixed;inset:0;background:#0008;display:grid;place-items:center}
+    .hidden{display:none}
   </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="card shadow-soft">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <span class="inline-flex h-8 w-8 rounded-lg brand-grad"></span>
-        <div class="leading-tight">
-          <div class="font-black tracking-tight">RECUPERA <span class="text-[var(--brand)]">CRÉDITO</span></div>
-          <div class="text-xs text-[var(--muted)] -mt-0.5">Painel administrativo</div>
-        </div>
+  <div class="wrap">
+    <header>
+      <div class="logo"><span class="dot"></span><strong>RECUPERA <span style="color:#e11d48">CRÉDITO</span> — Admin</strong></div>
+      <div style="display:flex;gap:8px">
+        <button id="export" class="btn">Exportar CSV</button>
+        <button id="logout" class="btn">Sair</button>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="btn-export" class="btn text-sm px-3 py-1.5 rounded border border-slate-700 hover:bg-slate-800">Exportar CSV</button>
-        <button id="btn-sair" class="btn text-sm px-3 py-1.5 rounded border border-slate-700 hover:bg-slate-800">Sair</button>
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-    <!-- LOGIN (modal central) -->
-    <section id="login" class="fixed inset-0 z-50 grid place-items-center bg-black/60">
-      <div class="card shadow-soft w-full max-w-md rounded-2xl overflow-hidden">
-        <div class="brand-grad h-1.5 w-full"></div>
-        <div class="p-6">
-          <h1 class="text-xl font-extrabold mb-1">Acesso restrito</h1>
-          <p class="text-sm text-[var(--muted)] mb-4">Use suas credenciais para entrar no painel.</p>
-          <form id="form-login" class="space-y-3">
-            <div>
-              <label class="text-xs text-[var(--muted)]">Usuário</label>
-              <input name="user" class="w-full border rounded px-3 py-2" value="ADMIN" placeholder="Usuário">
-            </div>
-            <div>
-              <label class="text-xs text-[var(--muted)]">Senha</label>
-              <input name="pass" class="w-full border rounded px-3 py-2" type="password" value="recupera123" placeholder="Senha">
-            </div>
-            <button class="w-full bg-[var(--brand)] hover:brightness-110 text-white rounded px-3 py-2 font-bold">Entrar</button>
-            <p class="text-xs text-[var(--muted)]">Login de exemplo: <b>ADMIN</b> / <b>recupera123</b></p>
-          </form>
-        </div>
+    <!-- KPIs -->
+    <section class="grid">
+      <div class="card k"><small style="color:var(--muted)">Total</small><strong id="m-total">0</strong></div>
+      <div class="card k"><small style="color:var(--muted)">Novo</small><strong id="m-novo">0</strong></div>
+      <div class="card k"><small style="color:var(--muted)">Em contato</small><strong id="m-contato">0</strong></div>
+      <div class="card k"><small style="color:var(--muted)">Fechado</small><strong id="m-fechado">0</strong></div>
+    </section>
+
+    <!-- Filtros -->
+    <section class="card" style="margin-top:14px">
+      <div class="filters">
+        <input id="q" placeholder="Buscar por nome / WhatsApp / cidade">
+        <select id="tipo"><option value="">Tipo (todos)</option><option>PF</option><option>PJ</option></select>
+        <select id="status"><option value="">Status (todos)</option><option>Novo</option><option>Em contato</option><option>Qualificado</option><option>Fechado</option><option>Descartado</option></select>
+        <select id="sort"><option value="created_at:desc">Mais recentes</option><option value="created_at:asc">Mais antigos</option><option value="nome:asc">Nome (A→Z)</option><option value="nome:desc">Nome (Z→A)</option></select>
+        <button id="refresh" class="btn btn--grad">Atualizar</button>
       </div>
     </section>
 
-    <!-- APP -->
-    <section id="app" class="hidden space-y-6">
-      <!-- CARDS DE MÉTRICA -->
-      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-        <div class="card rounded-xl p-4">
-          <div class="text-xs text-[var(--muted)]">Total</div>
-          <div id="m-total" class="text-2xl font-extrabold">0</div>
-        </div>
-        <div class="card rounded-xl p-4">
-          <div class="text-xs text-[var(--muted)]">Novo</div>
-          <div id="m-novo" class="text-2xl font-extrabold">0</div>
-        </div>
-        <div class="card rounded-xl p-4">
-          <div class="text-xs text-[var(--muted)]">Em contato</div>
-          <div id="m-contato" class="text-2xl font-extrabold">0</div>
-        </div>
-        <div class="card rounded-xl p-4">
-          <div class="text-xs text-[var(--muted)]">Qualificado</div>
-          <div id="m-qualificado" class="text-2xl font-extrabold">0</div>
-        </div>
-        <div class="card rounded-xl p-4">
-          <div class="text-xs text-[var(--muted)]">Fechado</div>
-          <div id="m-fechado" class="text-2xl font-extrabold">0</div>
-        </div>
-      </div>
-
-      <!-- FILTROS -->
-      <div class="card rounded-xl p-4 shadow-soft">
-        <div class="grid md:grid-cols-5 gap-3">
-          <input id="q" class="border rounded px-3 py-2 md:col-span-2" placeholder="Buscar por nome, WhatsApp ou cidade…">
-          <select id="f-tipo" class="border rounded px-3 py-2">
-            <option value="">Tipo (todos)</option>
-            <option>PF</option><option>PJ</option>
-          </select>
-          <select id="f-status" class="border rounded px-3 py-2">
-            <option value="">Status (todos)</option>
-            <option>Novo</option><option>Em contato</option>
-            <option>Qualificado</option><option>Fechado</option>
-            <option>Descartado</option>
-          </select>
-          <select id="sort" class="border rounded px-3 py-2">
-            <option value="created_at:desc">Mais recentes</option>
-            <option value="created_at:asc">Mais antigos</option>
-            <option value="nome:asc">Nome (A→Z)</option>
-            <option value="nome:desc">Nome (Z→A)</option>
-          </select>
-        </div>
-        <div class="flex items-center justify-between mt-3">
-          <div class="text-xs text-[var(--muted)]">Autoatualização a cada <b>10s</b>.</div>
-          <div class="flex items-center gap-2">
-            <button id="btn-refresh" class="btn px-3 py-2 rounded bg-slate-800 hover:bg-slate-700 text-white">Atualizar</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- TABELA -->
-      <div id="table-card" class="card rounded-xl overflow-hidden shadow-soft thead-sticky">
-        <table class="w-full text-sm table-dense">
-          <thead class="bg-slate-800/70">
+    <!-- Tabela -->
+    <section class="card" style="margin-top:14px">
+      <div style="overflow:auto;max-height:60vh">
+        <table>
+          <thead>
             <tr>
-              <th class="text-left p-2">Quando</th>
-              <th class="text-left p-2">Tipo</th>
-              <th class="text-left p-2">Nome</th>
-              <th class="text-left p-2">WhatsApp</th>
-              <th class="text-left p-2">Cidade</th>
-              <th class="text-left p-2">Tempo</th>
-              <th class="text-left p-2">Limite</th>
-              <th class="text-left p-2">Status</th>
-              <th class="text-left p-2">Ações</th>
+              <th>Quando</th><th>Tipo</th><th>Nome</th><th>WhatsApp</th><th>Cidade</th><th>Tempo</th><th>Limite</th><th>Status</th><th>Ações</th>
             </tr>
           </thead>
-          <tbody id="tbody"></tbody>
+          <tbody id="rows"></tbody>
         </table>
-
-        <!-- SKELETON -->
-        <div id="loading" class="p-6 grid gap-2">
-          <div class="h-3 bg-slate-800 animate-pulse rounded"></div>
-          <div class="h-3 bg-slate-800 animate-pulse rounded"></div>
-          <div class="h-3 bg-slate-800 animate-pulse rounded"></div>
-        </div>
-
-        <!-- VAZIO -->
-        <div id="empty" class="hidden p-10 text-center text-[var(--muted)]">
-          Nenhum registro encontrado com os filtros atuais.
-        </div>
       </div>
-
-      <div class="flex items-center justify-between text-xs text-[var(--muted)]">
-        <div id="count">0 registro(s)</div>
-        <div class="flex items-center gap-2">
-          <span class="badge b-novo">Novo</span>
-          <span class="badge b-contato">Em contato</span>
-          <span class="badge b-qualificado">Qualificado</span>
-          <span class="badge b-fechado">Fechado</span>
-          <span class="badge b-descartado">Descartado</span>
-        </div>
-      </div>
+      <div id="empty" style="text-align:center;color:var(--muted);padding:18px;display:none">Nenhum registro</div>
     </section>
-  </main>
+  </div>
 
-  <!-- TOASTS -->
-  <div id="toasts" class="fixed top-4 right-4 z-[60] space-y-2"></div>
+  <!-- Login -->
+  <div id="login" class="overlay">
+    <div class="card" style="width:min(420px,92vw)">
+      <div style="height:4px;background:linear-gradient(90deg,var(--rose),var(--amber));border-radius:999px;margin:-16px -16px 12px"></div>
+      <h3 style="margin:0 0 6px">Acesso restrito</h3>
+      <p style="margin:0 0 12px;color:var(--muted)">Use suas credenciais para entrar.</p>
+      <form id="formLogin">
+        <label>Usuário<br><input name="user" value="ADMIN" required></label><br><br>
+        <label>Senha<br><input name="pass" type="password" value="recupera123" required></label><br><br>
+        <button class="btn btn--grad" style="width:100%">Entrar</button>
+        <p style="margin-top:8px;color:var(--muted);font-size:12px">Ex.: <b>ADMIN</b> / <b>recupera123</b></p>
+      </form>
+    </div>
+  </div>
 
   <script>
-    // ========= CONFIG =========
-    const WPP = '5521983941778'; // DDI + DDD + número do seu atendimento
-
-    // ========= ELEMENTOS =========
-    const loginBox = document.getElementById('login');
-    const appBox   = document.getElementById('app');
-    const tbody    = document.getElementById('tbody');
-    const loading  = document.getElementById('loading');
-    const emptyEl  = document.getElementById('empty');
-    const countLbl = document.getElementById('count');
-    const mTot = document.getElementById('m-total');
-    const mNovo = document.getElementById('m-novo');
-    const mContato = document.getElementById('m-contato');
-    const mQuali = document.getElementById('m-qualificado');
-    const mFechado = document.getElementById('m-fechado');
-
-    const q = document.getElementById('q');
-    const fTipo = document.getElementById('f-tipo');
-    const fStatus = document.getElementById('f-status');
-    const sortSel = document.getElementById('sort');
-
-    // ========= HELPERS =========
-    const dt = s => new Date(s).toLocaleString('pt-BR');
-    const phone = s => (s||'').replace(/[^\d]/g,'');
-    const csv = rows => {
-      if(!rows.length) return '';
-      const keys = Object.keys(rows[0]);
-      const head = keys.join(',');
-      const body = rows.map(r=>keys.map(k=>JSON.stringify(r[k]??'')).join(',')).join('\n');
-      return head+'\n'+body;
-    };
-    const badge = (st) => {
-      const m = {'Novo':'b-novo','Em contato':'b-contato','Qualificado':'b-qualificado','Fechado':'b-fechado','Descartado':'b-descartado'};
-      return `<span class="badge ${m[st]||'b-novo'}">${st}</span>`;
-    };
-    function toast(msg,type='ok'){
-      const el = document.createElement('div');
-      el.className = 'rounded-lg px-3 py-2 text-sm text-white shadow-lg '+(type==='ok'?'bg-emerald-600':'bg-rose-600');
-      el.textContent = msg;
-      document.getElementById('toasts').appendChild(el);
-      setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(-6px)'; }, 1800);
-      setTimeout(()=>el.remove(), 2300);
-    }
-
-    // ========= ESTADO =========
+    // ----- estado & mocks -----
     let ALL = [];
-    let lastIds = new Set();
-    let poller = null;
+    const el = s=>document.querySelector(s);
+    const rows = el('#rows'), empty = el('#empty');
 
-    // ========= RENDER =========
-    function updateSummary(rows){
-      mTot.textContent = rows.length;
-      mNovo.textContent = rows.filter(r=>r.status==='Novo').length;
-      mContato.textContent = rows.filter(r=>r.status==='Em contato').length;
-      mQuali.textContent = rows.filter(r=>r.status==='Qualificado').length;
-      mFechado.textContent = rows.filter(r=>r.status==='Fechado').length;
+    function badge(st){
+      const map={ 'Novo':'s-novo','Em contato':'s-contato','Qualificado':'s-quali','Fechado':'s-fechado','Descartado':'s-desc' };
+      return `<span class="status ${map[st]||'s-novo'}">${st}</span>`;
     }
 
-    function applyFilters(){
-      let rows = [...ALL];
-      const term = q.value.toLowerCase().trim();
-      if(term){
-        rows = rows.filter(r =>
-          (r.nome||'').toLowerCase().includes(term) ||
-          (r.whatsapp||'').toLowerCase().includes(term) ||
-          (r.cidade||'').toLowerCase().includes(term)
-        );
-      }
-      if(fTipo.value) rows = rows.filter(r => r.tipo === fTipo.value);
-      if(fStatus.value) rows = rows.filter(r => r.status === fStatus.value);
+    function updateKPIs(list){
+      el('#m-total').textContent=list.length;
+      el('#m-novo').textContent=list.filter(x=>x.status==='Novo').length;
+      el('#m-contato').textContent=list.filter(x=>x.status==='Em contato').length;
+      el('#m-fechado').textContent=list.filter(x=>x.status==='Fechado').length;
+    }
 
-      const [k,dir] = sortSel.value.split(':');
-      rows.sort((a,b)=>{
-        const A = (a[k]||'').toString().toLowerCase();
-        const B = (b[k]||'').toString().toLowerCase();
-        if(A<B) return dir==='asc'?-1:1;
-        if(A>B) return dir==='asc'?1:-1;
-        return 0;
+    function apply(){
+      let list=[...ALL];
+      const q = el('#q').value.trim().toLowerCase();
+      const tp = el('#tipo').value;
+      const st = el('#status').value;
+      const [k,dir] = el('#sort').value.split(':');
+
+      if(q) list=list.filter(r=>(r.nome||'').toLowerCase().includes(q)||(r.whatsapp||'').includes(q)||(r.cidade||'').toLowerCase().includes(q));
+      if(tp) list=list.filter(r=>r.tipo===tp);
+      if(st) list=list.filter(r=>r.status===st);
+
+      list.sort((a,b)=>{
+        const A=(a[k]||'').toString().toLowerCase(), B=(b[k]||'').toString().toLowerCase();
+        if(A<B) return dir==='asc'?-1:1; if(A>B) return dir==='asc'?1:-1; return 0;
       });
 
-      render(rows);
-      updateSummary(rows);
+      rows.innerHTML = list.map(r=>`
+        <tr>
+          <td>${new Date(r.created_at).toLocaleString('pt-BR')}</td>
+          <td>${r.tipo}</td>
+          <td>${r.nome||'-'}</td>
+          <td>${r.whatsapp||'-'}</td>
+          <td>${r.cidade||'-'}</td>
+          <td>${r.tempo||'-'}</td>
+          <td>${r.limite ?? '-'}</td>
+          <td>${badge(r.status||'Novo')}</td>
+          <td><button class="btn" data-copy="${r.whatsapp||''}" style="padding:6px 10px;font-size:12px">Copiar</button></td>
+        </tr>
+      `).join('');
+
+      empty.style.display = list.length? 'none':'block';
+      updateKPIs(list);
     }
 
-    function render(rows){
-      countLbl.textContent = `${rows.length} registro(s)`;
-      loading.classList.add('hidden');
-      emptyEl.classList.toggle('hidden', rows.length>0);
-
-      tbody.innerHTML = rows.map(r=>{
-        const isNew = !lastIds.has(r.id);
-        return `
-        <tr class="border-t border-slate-800 ${isNew?'row-new':''}">
-          <td class="p-2 whitespace-nowrap">${dt(r.created_at)}</td>
-          <td class="p-2">${r.tipo}</td>
-          <td class="p-2">${r.nome||'-'}</td>
-          <td class="p-2">
-            ${(r.whatsapp||'-')}
-            ${r.whatsapp?`<button data-copy="${r.whatsapp}" class="btn ml-2 text-xs px-2 py-1 border border-slate-700 rounded hover:bg-slate-800">copiar</button>`:''}
-          </td>
-          <td class="p-2">${r.cidade||'-'}</td>
-          <td class="p-2">${r.tempo||'-'}</td>
-          <td class="p-2">${r.limite!=null?r.limite:'-'}</td>
-          <td class="p-2">
-            <select data-id="${r.id}" class="status border border-slate-700 rounded px-2 py-1 bg-slate-900">
-              ${['Novo','Em contato','Qualificado','Fechado','Descartado'].map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}
-            </select>
-            <div class="mt-1">${badge(r.status||'Novo')}</div>
-          </td>
-          <td class="p-2">
-            ${r.whatsapp?`<a target="_blank" class="btn text-[var(--brand)] underline" href="https://wa.me/${phone(WPP)}?text=${encodeURIComponent('Olá '+(r.nome||'')+', recebi sua análise da Recupera Crédito. Podemos falar agora?')}">WhatsApp</a>`:''}
-          </td>
-        </tr>`;
-      }).join('');
-
-      lastIds = new Set(rows.map(r=>r.id));
-    }
-
-    async function fetchLeads(playPing=true){
+    async function load(){
       try{
-        const r = await fetch('/api/leads');
-        if(!r.ok){ // não autenticado
-          appBox.classList.add('hidden'); loginBox.classList.remove('hidden'); return;
-        }
-        const rows = await r.json();
-        const before = new Set(ALL.map(x=>x.id));
-        ALL = rows;
-        applyFilters();
-
-        if(playPing && rows.some(x=>!before.has(x.id))){
-          try{
-            const ctx = new (window.AudioContext||window.webkitAudioContext)();
-            const o = ctx.createOscillator(); const g = ctx.createGain();
-            o.type='triangle'; o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
-            o.start(); g.gain.setValueAtTime(.06,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.25);
-            setTimeout(()=>o.stop(),260);
-          }catch(e){}
-        }
-      }catch(e){
-        toast('Erro ao carregar dados','err');
+        const r = await fetch('/api/leads'); // se backend existir, usa
+        if(!r.ok) throw 0;
+        ALL = await r.json();
+      }catch(_){
+        // mock local (sem backend)
+        ALL = [
+          {id:'1',created_at:Date.now()-3600e3,tipo:'PF',nome:'Maria',whatsapp:'(11) 99999-0001',cidade:'SP',tempo:'2 meses',limite:3000,status:'Novo'},
+          {id:'2',created_at:Date.now()-7200e3,tipo:'PJ',nome:'Oficina Boa',whatsapp:'(21) 98888-0002',cidade:'RJ',tempo:'5 meses',limite:12000,status:'Em contato'},
+          {id:'3',created_at:Date.now()-9600e3,tipo:'PF',nome:'Carlos',whatsapp:'(31) 97777-0003',cidade:'BH',tempo:'1 mês',limite:4500,status:'Fechado'}
+        ];
       }
+      apply();
     }
 
-    // ========= LOGIN/LOGOUT =========
-    async function login(data){
-      try{
-        const r = await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-        if(r.ok){
-          loginBox.classList.add('hidden');
-          appBox.classList.remove('hidden');
-          loading.classList.remove('hidden'); emptyEl.classList.add('hidden'); tbody.innerHTML='';
-          await fetchLeads(false);
-          loop();
-          toast('Bem-vindo!');
-        }else{
-          toast('Login inválido','err');
-        }
-      }catch(e){
-        toast('Falha na autenticação','err');
-      }
-    }
+    // eventos
+    ['#q','#tipo','#status','#sort'].forEach(s=>el(s).addEventListener('input',apply));
+    rows.addEventListener('click',e=>{
+      const b=e.target.closest('[data-copy]'); if(!b) return;
+      navigator.clipboard.writeText(b.dataset.copy); b.textContent='Copiado!'; setTimeout(()=>b.textContent='Copiar',800);
+    });
+    el('#refresh').addEventListener('click',load);
+    el('#export').addEventListener('click',()=>{
+      if(!ALL.length) return;
+      const keys=Object.keys(ALL[0]);
+      const csv=[keys.join(',')].concat(ALL.map(r=>keys.map(k=>JSON.stringify(r[k]??'')).join(','))).join('\n');
+      const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='leads.csv'; a.click();
+    });
+    el('#logout').addEventListener('click',()=>{ document.getElementById('login').classList.remove('hidden'); });
 
-    // ========= EVENTOS =========
-    document.getElementById('form-login').addEventListener('submit', e=>{
+    // login fake local (ADMIN / recupera123)
+    document.getElementById('formLogin').addEventListener('submit',e=>{
       e.preventDefault();
-      const d = Object.fromEntries(new FormData(e.target).entries());
-      login(d);
-    });
-
-    document.getElementById('btn-sair').addEventListener('click', async ()=>{
-      await fetch('/logout',{method:'POST'});
-      clearInterval(poller);
-      appBox.classList.add('hidden'); loginBox.classList.remove('hidden');
-    });
-
-    document.getElementById('btn-refresh').addEventListener('click', ()=> fetchLeads(false));
-
-    document.getElementById('btn-export').addEventListener('click', ()=>{
-      if(!ALL.length){ toast('Sem dados para exportar','err'); return; }
-      const blob = new Blob([csv(ALL)], {type:'text/csv;charset=utf-8;'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'leads.csv'; a.click();
-    });
-
-    [q,fTipo,fStatus,sortSel].forEach(el=> el.addEventListener('input', applyFilters));
-
-    document.addEventListener('change', async e=>{
-      if(e.target.classList.contains('status')){
-        const id = e.target.dataset.id, status = e.target.value;
-        try{
-          const r = await fetch('/api/leads/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
-          if(r.ok){
-            const row = ALL.find(x=>x.id===id); if(row){ row.status = status; applyFilters(); }
-            toast('Status atualizado');
-          }else{
-            toast('Erro ao atualizar status','err');
-          }
-        }catch(_){ toast('Erro ao atualizar status','err'); }
+      const d=Object.fromEntries(new FormData(e.target).entries());
+      if(d.user.toUpperCase()==='ADMIN' && d.pass==='recupera123'){
+        document.getElementById('login').classList.add('hidden'); load();
+      }else{
+        alert('Login inválido');
       }
     });
 
-    document.addEventListener('click', e=>{
-      const btn = e.target.closest('[data-copy]');
-      if(btn){
-        navigator.clipboard.writeText(btn.getAttribute('data-copy'));
-        btn.textContent = 'copiado!';
-        setTimeout(()=>btn.textContent='copiar', 900);
-      }
-    });
-
-    // ========= LOOP AUTO-REFRESH =========
-    function loop(){ clearInterval(poller); poller = setInterval(fetchLeads, 10000); }
-
-    // tenta carregar se já há sessão
-    fetchLeads(false);
+    // tenta entrar direto (se já tiver sessão no backend, /api/leads responde ok)
+    (async ()=>{
+      try{ const t=await fetch('/api/leads'); if(t.ok){ document.getElementById('login').classList.add('hidden'); } }catch(_){}
+      if(document.getElementById('login').classList.contains('hidden')) load();
+    })();
   </script>
 </body>
 </html>
