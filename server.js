@@ -36,6 +36,11 @@ app.use(session({
 
 // servir arquivos estáticos do repositório (index.html, admin.html)
 app.use(express.static(path.join(__dirname)));
+// rota explícita pro painel
+app.get('/admin.html', (_, res) =>
+  res.sendFile(path.join(__dirname, 'admin.html'))
+);
+
 
 const USER = 'ADMIN';
 const PASS = 'recupera123';
