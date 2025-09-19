@@ -2,33 +2,40 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Admin — Recupera Crédito</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    :root{--brand:#e11d48;--brand2:#f97316;--ink:#0f172a;--muted:#475569;--card:#fff;--bg:#f8fafc;--border:#e2e8f0}
+    :root{
+      --brand:#e11d48; /* rose-600 */
+      --brand-2:#f97316; /* amber-500 */
+      --ink:#0f172a;
+      --muted:#475569;
+      --card:#ffffff;
+      --bg:#f8fafc;
+      --border:#e2e8f0;
+    }
     body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
-    .brand-grad{background:linear-gradient(135deg,var(--brand),var(--brand2))}
-    .card{background:var(--card);border:1px solid var(--border)}
-    .shadow-soft{box-shadow:0 6px 24px rgba(2,8,23,.06)}
-    .btn{transition:transform .05s ease}.btn:active{transform:scale(.98)}
+    .brand-grad{background:linear-gradient(135deg,var(--brand),var(--brand-2))}
+    .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:.5rem;font-weight:700}
+    .b-novo{background:#eef2ff;color:#4338ca}
+    .b-contato{background:#fff7ed;color:#c2410c}
+    .b-qualificado{background:#ecfeff;color:#155e75}
+    .b-fechado{background:#ecfdf5;color:#065f46}
+    .b-descartado{background:#fef2f2;color:#991b1b}
+    .row-new{animation:flash 1.2s ease-in-out 1}
+    @keyframes flash{0%{background:#fff7ed}100%{background:transparent}}
     .thead-sticky thead th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 var(--border)}
     .table-dense td,.table-dense th{padding:.55rem .6rem}
-    .badge{font-size:.75rem;padding:.15rem .5rem;border-radius:.5rem;font-weight:700}
-    .b-novo{background:#eef2ff;color:#4338ca}.b-contato{background:#fff7ed;color:#c2410c}
-    .b-qualificado{background:#ecfeff;color:#155e75}.b-fechado{background:#ecfdf5;color:#065f46}
-    .b-descartado{background:#fef2f2;color:#991b1b}
-    .row-new{animation:flash 1.2s ease-in-out 1}@keyframes flash{0%{background:#fff7ed}100%{background:transparent}}
-    .chip{border:1px solid var(--border);padding:.25rem .5rem;border-radius:999px;font-size:.75rem}
-    .kan-col{min-height:220px}
-    .drag-card{cursor:grab}
-    .drag-over{outline:2px dashed var(--brand);outline-offset:2px}
+    .shadow-soft{box-shadow:0 6px 24px rgba(2,8,23,.06)}
+    .card{background:var(--card);border:1px solid var(--border)}
+    .btn{transition:transform .05s ease}
+    .btn:active{transform:scale(.98)}
   </style>
 </head>
 <body>
   <!-- HEADER -->
-  <header class="card shadow-soft sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+  <header class="card shadow-soft">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <span class="inline-flex h-8 w-8 rounded-lg brand-grad"></span>
@@ -38,7 +45,6 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span id="refresh-badge" class="chip">Atualiza em 10s</span>
         <button id="btn-export" class="btn text-sm px-3 py-1.5 rounded border">Exportar CSV</button>
         <button id="btn-sair" class="btn text-sm px-3 py-1.5 rounded border">Sair</button>
       </div>
@@ -46,25 +52,24 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-    <!-- LOGIN (centralizado) -->
+    <!-- LOGIN (modal central) -->
     <section id="login" class="fixed inset-0 z-50 grid place-items-center bg-black/40">
       <div class="card shadow-soft w-full max-w-md rounded-2xl overflow-hidden">
         <div class="brand-grad h-1.5 w-full"></div>
         <div class="p-6">
           <h1 class="text-xl font-extrabold mb-1">Acesso restrito</h1>
-          <p class="text-sm text-slate-500 mb-4">Use suas credenciais para entrar.</p>
+          <p class="text-sm text-slate-500 mb-4">Use suas credenciais para entrar no painel.</p>
           <form id="form-login" class="space-y-3">
             <div>
               <label class="text-xs text-slate-500">Usuário</label>
-              <input name="user" class="w-full border rounded px-3 py-2" value="ADMIN">
+              <input name="user" class="w-full border rounded px-3 py-2" value="ADMIN" placeholder="Usuário">
             </div>
             <div>
               <label class="text-xs text-slate-500">Senha</label>
-              <input name="pass" class="w-full border rounded px-3 py-2" type="password" value="recupera123">
+              <input name="pass" class="w-full border rounded px-3 py-2" type="password" value="recupera123" placeholder="Senha">
             </div>
             <button class="w-full bg-[var(--brand)] hover:brightness-110 text-white rounded px-3 py-2 font-bold">Entrar</button>
-            <p class="text-xs text-slate-400">Exemplo: <b>ADMIN</b> / <b>recupera123</b></p>
-            <p id="login-err" class="hidden text-xs text-rose-600">Login inválido.</p>
+            <p class="text-xs text-slate-400">Login de exemplo: <b>ADMIN</b> / <b>recupera123</b></p>
           </form>
         </div>
       </div>
@@ -72,121 +77,89 @@
 
     <!-- APP -->
     <section id="app" class="hidden space-y-6">
-      <!-- Ações rápidas -->
+      <!-- RESUMO -->
       <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
-        <button id="qa-novos" class="card rounded-xl p-3 text-left hover:shadow-soft transition">
-          <div class="text-xs text-slate-500">Atalhos</div>
-          <div class="font-bold">Ver apenas <span class="text-[var(--brand)]">Novos</span></div>
-        </button>
-        <button id="qa-limpar" class="card rounded-xl p-3 text-left hover:shadow-soft transition">
-          <div class="text-xs text-slate-500">Atalhos</div>
-          <div class="font-bold">Limpar filtros</div>
-        </button>
-        <a id="qa-form" href="#" class="card rounded-xl p-3 text-left hover:shadow-soft transition">
-          <div class="text-xs text-slate-500">Formulário</div>
-          <div class="font-bold">Copiar link de análise</div>
-        </a>
-        <a id="qa-wpp" target="_blank" class="card rounded-xl p-3 text-left hover:shadow-soft transition">
-          <div class="text-xs text-slate-500">WhatsApp</div>
-          <div class="font-bold">Abrir atendimento</div>
-        </a>
-        <button id="qa-csv" class="card rounded-xl p-3 text-left hover:shadow-soft transition">
-          <div class="text-xs text-slate-500">Exportação</div>
-          <div class="font-bold">Baixar CSV</div>
-        </button>
-      </div>
-
-      <!-- KPIs + Charts -->
-      <div class="grid lg:grid-cols-3 gap-4">
-        <div class="lg:col-span-2 space-y-4">
-          <div class="grid sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            <div class="card rounded-xl p-3"><div class="text-xs text-slate-500">Total</div><div class="flex items-end justify-between"><div id="m-total" class="text-2xl font-extrabold">0</div><canvas id="sp-total" height="30"></canvas></div></div>
-            <div class="card rounded-xl p-3"><div class="text-xs text-slate-500">Novo</div><div class="flex items-end justify-between"><div id="m-novo" class="text-2xl font-extrabold">0</div><canvas id="sp-novo" height="30"></canvas></div></div>
-            <div class="card rounded-xl p-3"><div class="text-xs text-slate-500">Em contato</div><div class="flex items-end justify-between"><div id="m-contato" class="text-2xl font-extrabold">0</div><canvas id="sp-contato" height="30"></canvas></div></div>
-            <div class="card rounded-xl p-3"><div class="text-xs text-slate-500">Qualificado</div><div class="flex items-end justify-between"><div id="m-qualificado" class="text-2xl font-extrabold">0</div><canvas id="sp-quali" height="30"></canvas></div></div>
-            <div class="card rounded-xl p-3"><div class="text-xs text-slate-500">Fechado</div><div class="flex items-end justify-between"><div id="m-fechado" class="text-2xl font-extrabold">0</div><canvas id="sp-fechado" height="30"></canvas></div></div>
-          </div>
-
-          <!-- Tabela -->
-          <div id="table-card" class="card rounded-xl overflow-hidden shadow-soft thead-sticky">
-            <div class="p-3 flex flex-wrap items-center gap-2 border-b">
-              <input id="q" class="border rounded px-3 py-2" placeholder="Buscar por nome, WhatsApp ou cidade…">
-              <select id="f-tipo" class="border rounded px-3 py-2"><option value="">Tipo (todos)</option><option>PF</option><option>PJ</option></select>
-              <select id="f-status" class="border rounded px-3 py-2">
-                <option value="">Status (todos)</option><option>Novo</option><option>Em contato</option>
-                <option>Qualificado</option><option>Fechado</option><option>Descartado</option>
-              </select>
-              <select id="sort" class="border rounded px-3 py-2">
-                <option value="created_at:desc">Mais recentes</option><option value="created_at:asc">Mais antigos</option>
-                <option value="nome:asc">Nome (A→Z)</option><option value="nome:desc">Nome (Z→A)</option>
-              </select>
-              <div class="ml-auto flex items-center gap-2 text-sm">
-                <button id="btn-refresh" class="btn px-3 py-2 border rounded">Atualizar</button>
-                <span id="refresh-badge-2" class="chip">Atualiza em 10s</span>
-              </div>
-            </div>
-
-            <table class="w-full text-sm table-dense">
-              <thead class="bg-slate-100">
-                <tr>
-                  <th class="text-left p-2">Quando</th>
-                  <th class="text-left p-2">Tipo</th>
-                  <th class="text-left p-2">Nome</th>
-                  <th class="text-left p-2">WhatsApp</th>
-                  <th class="text-left p-2">Cidade</th>
-                  <th class="text-left p-2">Tempo</th>
-                  <th class="text-left p-2">Limite</th>
-                  <th class="text-left p-2">Status</th>
-                  <th class="text-left p-2">Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tbody"></tbody>
-            </table>
-
-            <div id="loading" class="p-6 grid gap-2">
-              <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
-              <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
-              <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
-            </div>
-            <div id="empty" class="hidden p-10 text-center text-slate-500">
-              Nenhum registro encontrado com os filtros atuais.
-            </div>
-
-            <!-- Paginação -->
-            <div class="flex items-center justify-between p-3 border-t text-sm">
-              <div id="page-info">0–0 de 0</div>
-              <div class="flex items-center gap-2">
-                <button id="prev" class="btn px-3 py-1.5 border rounded">Anterior</button>
-                <button id="next" class="btn px-3 py-1.5 border rounded">Próxima</button>
-              </div>
-            </div>
-          </div>
+        <div class="card rounded-xl p-4">
+          <div class="text-xs text-slate-500">Total</div>
+          <div id="m-total" class="text-2xl font-extrabold">0</div>
         </div>
-
-        <!-- Side panel -->
-        <div class="space-y-4">
-          <div class="card rounded-xl p-4 shadow-soft">
-            <div class="text-sm font-bold mb-2">Distribuição por status</div>
-            <canvas id="pie-status" height="200"></canvas>
-          </div>
-          <div class="card rounded-xl p-4 shadow-soft">
-            <div class="text-sm font-bold mb-2">Funil</div>
-            <ul id="funnel" class="text-sm text-slate-600 space-y-1"></ul>
-          </div>
-          <div class="card rounded-xl p-4 shadow-soft">
-            <div class="text-sm font-bold mb-2">Atividades recentes</div>
-            <div id="feed" class="text-sm text-slate-600 space-y-1"></div>
-          </div>
+        <div class="card rounded-xl p-4">
+          <div class="text-xs text-slate-500">Novo</div>
+          <div id="m-novo" class="text-2xl font-extrabold">0</div>
+        </div>
+        <div class="card rounded-xl p-4">
+          <div class="text-xs text-slate-500">Em contato</div>
+          <div id="m-contato" class="text-2xl font-extrabold">0</div>
+        </div>
+        <div class="card rounded-xl p-4">
+          <div class="text-xs text-slate-500">Qualificado</div>
+          <div id="m-qualificado" class="text-2xl font-extrabold">0</div>
+        </div>
+        <div class="card rounded-xl p-4">
+          <div class="text-xs text-slate-500">Fechado</div>
+          <div id="m-fechado" class="text-2xl font-extrabold">0</div>
         </div>
       </div>
 
-      <!-- KANBAN -->
+      <!-- FILTROS -->
       <div class="card rounded-xl p-4 shadow-soft">
-        <div class="flex items-center justify-between mb-3">
-          <div class="font-bold">Kanban — arraste para mover de etapa</div>
-          <div class="text-xs text-slate-500">Dica: segure e arraste o cartão.</div>
+        <div class="grid md:grid-cols-5 gap-3">
+          <input id="q" class="border rounded px-3 py-2 md:col-span-2" placeholder="Buscar por nome, WhatsApp ou cidade…">
+          <select id="f-tipo" class="border rounded px-3 py-2">
+            <option value="">Tipo (todos)</option>
+            <option>PF</option><option>PJ</option>
+          </select>
+          <select id="f-status" class="border rounded px-3 py-2">
+            <option value="">Status (todos)</option>
+            <option>Novo</option><option>Em contato</option>
+            <option>Qualificado</option><option>Fechado</option>
+            <option>Descartado</option>
+          </select>
+          <select id="sort" class="border rounded px-3 py-2">
+            <option value="created_at:desc">Mais recentes</option>
+            <option value="created_at:asc">Mais antigos</option>
+            <option value="nome:asc">Nome (A→Z)</option>
+            <option value="nome:desc">Nome (Z→A)</option>
+          </select>
         </div>
-        <div class="grid md:grid-cols-3 xl:grid-cols-5 gap-3" id="kanban"></div>
+        <div class="flex items-center justify-between mt-3">
+          <div class="text-xs text-slate-500">Autoatualização a cada <b>10s</b>.</div>
+          <div class="flex items-center gap-2">
+            <button id="btn-refresh" class="btn px-3 py-2 rounded bg-slate-900 text-white">Atualizar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABELA -->
+      <div id="table-card" class="card rounded-xl overflow-hidden shadow-soft thead-sticky">
+        <table class="w-full text-sm table-dense">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="text-left p-2">Quando</th>
+              <th class="text-left p-2">Tipo</th>
+              <th class="text-left p-2">Nome</th>
+              <th class="text-left p-2">WhatsApp</th>
+              <th class="text-left p-2">Cidade</th>
+              <th class="text-left p-2">Tempo</th>
+              <th class="text-left p-2">Limite</th>
+              <th class="text-left p-2">Status</th>
+              <th class="text-left p-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+
+        <!-- SKELETON (carregando) -->
+        <div id="loading" class="p-6 grid gap-2">
+          <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
+          <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
+          <div class="h-3 bg-slate-100 animate-pulse rounded"></div>
+        </div>
+
+        <!-- VAZIO -->
+        <div id="empty" class="hidden p-10 text-center text-slate-500">
+          Nenhum registro encontrado com os filtros atuais.
+        </div>
       </div>
 
       <div class="flex items-center justify-between text-xs text-slate-500">
@@ -202,92 +175,113 @@
     </section>
   </main>
 
+  <!-- TOASTS -->
   <div id="toasts" class="fixed top-4 right-4 z-[60] space-y-2"></div>
 
   <script>
     // ========= CONFIG =========
-    const WPP='5521983941778';
-    const FORM_LINK = location.origin+'/#analise';
+    const WPP = '5521983941778'; // DDI + DDD + número do seu atendimento
 
-    // ========= UI REFS =========
-    const loginBox=document.getElementById('login'), appBox=document.getElementById('app');
-    const tbody=document.getElementById('tbody'), loading=document.getElementById('loading'), emptyEl=document.getElementById('empty');
-    const refreshBadge=document.getElementById('refresh-badge'), refreshBadge2=document.getElementById('refresh-badge-2');
-    const countLbl=document.getElementById('count'), pageInfo=document.getElementById('page-info'), prevBtn=document.getElementById('prev'), nextBtn=document.getElementById('next');
-    const mTot=document.getElementById('m-total'), mNovo=document.getElementById('m-novo'), mContato=document.getElementById('m-contato'), mQuali=document.getElementById('m-qualificado'), mFechado=document.getElementById('m-fechado');
-    const q=document.getElementById('q'), fTipo=document.getElementById('f-tipo'), fStatus=document.getElementById('f-status'), sortSel=document.getElementById('sort');
-    const qaNovos=document.getElementById('qa-novos'), qaLimpar=document.getElementById('qa-limpar'), qaForm=document.getElementById('qa-form'), qaWpp=document.getElementById('qa-wpp'), qaCsv=document.getElementById('qa-csv');
-    const loginErr=document.getElementById('login-err');
+    // ========= ELEMENTOS =========
+    const loginBox = document.getElementById('login');
+    const appBox   = document.getElementById('app');
+    const tbody    = document.getElementById('tbody');
+    const loading  = document.getElementById('loading');
+    const emptyEl  = document.getElementById('empty');
+    const countLbl = document.getElementById('count');
+    const mTot = document.getElementById('m-total');
+    const mNovo = document.getElementById('m-novo');
+    const mContato = document.getElementById('m-contato');
+    const mQuali = document.getElementById('m-qualificado');
+    const mFechado = document.getElementById('m-fechado');
+
+    const q = document.getElementById('q');
+    const fTipo = document.getElementById('f-tipo');
+    const fStatus = document.getElementById('f-status');
+    const sortSel = document.getElementById('sort');
 
     // ========= HELPERS =========
-    const dt=s=>new Date(s).toLocaleString('pt-BR');
-    const phone=s=>(s||'').replace(/[^\d]/g,'');
-    const csv=rows=>rows.length?(Object.keys(rows[0]).join(',')+'\n'+rows.map(r=>Object.keys(rows[0]).map(k=>JSON.stringify(r[k]??'')).join(',')).join('\n')):'';
-    const badge=(st)=>{const m={'Novo':'b-novo','Em contato':'b-contato','Qualificado':'b-qualificado','Fechado':'b-fechado','Descartado':'b-descartado'};return `<span class="badge ${m[st]||'b-novo'}">${st}</span>`};
-    function toast(msg,type='ok'){const el=document.createElement('div');el.className='rounded-lg px-3 py-2 text-sm text-white shadow-lg '+(type==='ok'?'bg-emerald-600':'bg-rose-600');el.textContent=msg;document.getElementById('toasts').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(-6px)'},1800);setTimeout(()=>el.remove(),2300)}
-
-    // ========= CHARTS =========
-    let spark={}, pie;
-    function makeSpark(id,data){const ctx=document.getElementById(id);if(!ctx)return; if(spark[id])spark[id].destroy(); spark[id]=new Chart(ctx,{type:'line',data:{labels:data.map((_,i)=>i+1),datasets:[{data,borderColor:'#0ea5e9',pointRadius:0,tension:.35,fill:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}}})}
-    function makePie(dist){const ctx=document.getElementById('pie-status'); if(pie)pie.destroy(); pie=new Chart(ctx,{type:'doughnut',data:{labels:Object.keys(dist),datasets:[{data:Object.values(dist),backgroundColor:['#6366f1','#f59e0b','#06b6d4','#10b981','#ef4444']}]},options:{plugins:{legend:{position:'bottom'}}}})}
+    const dt = s => new Date(s).toLocaleString('pt-BR');
+    const phone = s => (s||'').replace(/[^\d]/g,'');
+    const csv = rows => {
+      if(!rows.length) return '';
+      const keys = Object.keys(rows[0]);
+      const head = keys.join(',');
+      const body = rows.map(r=>keys.map(k=>JSON.stringify(r[k]??'')).join(',')).join('\n');
+      return head+'\n'+body;
+    };
+    const badge = (st) => {
+      const m = {'Novo':'b-novo','Em contato':'b-contato','Qualificado':'b-qualificado','Fechado':'b-fechado','Descartado':'b-descartado'};
+      return `<span class="badge ${m[st]||'b-novo'}">${st}</span>`;
+    };
+    function toast(msg,type='ok'){
+      const el = document.createElement('div');
+      el.className = 'rounded-lg px-3 py-2 text-sm text-white shadow-lg '+(type==='ok'?'bg-emerald-600':'bg-rose-600');
+      el.textContent = msg;
+      document.getElementById('toasts').appendChild(el);
+      setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(-6px)'; }, 1800);
+      setTimeout(()=>el.remove(), 2300);
+    }
 
     // ========= ESTADO =========
-    let ALL=[], lastIds=new Set(); let poller=null, countdown=10, timer=null;
-    let page=1, perPage=25, filtered=[];
+    let ALL = [];
+    let lastIds = new Set();
+    let poller = null;
 
-    // ========= RESUMOS =========
+    // ========= RENDER =========
     function updateSummary(rows){
-      const dist={'Novo':0,'Em contato':0,'Qualificado':0,'Fechado':0,'Descartado':0};
-      rows.forEach(r=>dist[r.status]= (dist[r.status]||0)+1);
-      mTot.textContent=rows.length; mNovo.textContent=dist['Novo']; mContato.textContent=dist['Em contato']; mQuali.textContent=dist['Qualificado']; mFechado.textContent=dist['Fechado'];
-
-      document.getElementById('funnel').innerHTML=`
-        <div>Novos: <b>${dist['Novo']}</b></div>
-        <div>Em contato: <b>${dist['Em contato']}</b></div>
-        <div>Qualificados: <b>${dist['Qualificado']}</b></div>
-        <div>Fechados: <b>${dist['Fechado']}</b></div>
-      `;
-      makePie(dist);
-
-      const byDay=(status)=>{const arr=Array(7).fill(0);const now=new Date();rows.forEach(r=>{if(status && r.status!==status)return;const d=new Date(r.created_at);const diff=Math.floor((now-d)/(1000*60*60*24));if(diff>=0&&diff<7)arr[6-diff]++});return arr}
-      makeSpark('sp-total',byDay()); makeSpark('sp-novo',byDay('Novo')); makeSpark('sp-contato',byDay('Em contato')); makeSpark('sp-quali',byDay('Qualificado')); makeSpark('sp-fechado',byDay('Fechado'));
+      mTot.textContent = rows.length;
+      mNovo.textContent = rows.filter(r=>r.status==='Novo').length;
+      mContato.textContent = rows.filter(r=>r.status==='Em contato').length;
+      mQuali.textContent = rows.filter(r=>r.status==='Qualificado').length;
+      mFechado.textContent = rows.filter(r=>r.status==='Fechado').length;
     }
 
-    // ========= FILTROS / PAG =========
     function applyFilters(){
-      let rows=[...ALL];
-      const term=q.value.toLowerCase().trim();
-      if(term){rows=rows.filter(r=>(r.nome||'').toLowerCase().includes(term)||(r.whatsapp||'').toLowerCase().includes(term)||(r.cidade||'').toLowerCase().includes(term))}
-      if(fTipo.value) rows=rows.filter(r=>r.tipo===fTipo.value);
-      if(fStatus.value) rows=rows.filter(r=>r.status===fStatus.value);
-      const [k,dir]=sortSel.value.split(':'); rows.sort((a,b)=>{const A=(a[k]||'').toString().toLowerCase(),B=(b[k]||'').toString().toLowerCase();if(A<B)return dir==='asc'?-1:1;if(A>B)return dir==='asc'?1:-1;return 0});
-      filtered=rows; page=1; renderPaged(); updateSummary(rows); buildFeed(rows); renderKanban(rows);
-    }
-    function renderPaged(){
-      const total=filtered.length, start=(page-1)*perPage, end=Math.min(start+perPage,total);
-      const slice=filtered.slice(start,end);
-      renderTable(slice); pageInfo.textContent= total? `${start+1}–${end} de ${total}` : '0–0 de 0';
-      prevBtn.disabled=page===1; nextBtn.disabled=end>=total;
-    }
-    prevBtn.onclick=()=>{if(page>1){page--;renderPaged()}}; nextBtn.onclick=()=>{const total=filtered.length; if(page*perPage<total){page++;renderPaged()}}
+      let rows = [...ALL];
+      const term = q.value.toLowerCase().trim();
+      if(term){
+        rows = rows.filter(r =>
+          (r.nome||'').toLowerCase().includes(term) ||
+          (r.whatsapp||'').toLowerCase().includes(term) ||
+          (r.cidade||'').toLowerCase().includes(term)
+        );
+      }
+      if(fTipo.value) rows = rows.filter(r => r.tipo === fTipo.value);
+      if(fStatus.value) rows = rows.filter(r => r.status === fStatus.value);
 
-    // ========= TABELA =========
-    function renderTable(rows){
-      countLbl.textContent=`${filtered.length} registro(s)`; loading.classList.add('hidden'); emptyEl.classList.toggle('hidden',rows.length>0);
-      tbody.innerHTML=rows.map(r=>{
-        const isNew=!lastIds.has(r.id);
-        return `<tr class="border-t ${isNew?'row-new':''}">
+      const [k,dir] = sortSel.value.split(':');
+      rows.sort((a,b)=>{
+        const A = (a[k]||'').toString().toLowerCase();
+        const B = (b[k]||'').toString().toLowerCase();
+        if(A<B) return dir==='asc'?-1:1;
+        if(A>B) return dir==='asc'?1:-1;
+        return 0;
+      });
+
+      render(rows);
+      updateSummary(rows);
+    }
+
+    function render(rows){
+      countLbl.textContent = `${rows.length} registro(s)`;
+      loading.classList.add('hidden');
+      emptyEl.classList.toggle('hidden', rows.length>0);
+
+      tbody.innerHTML = rows.map(r=>{
+        const isNew = !lastIds.has(r.id);
+        return `
+        <tr class="border-t ${isNew?'row-new':''}">
           <td class="p-2 whitespace-nowrap">${dt(r.created_at)}</td>
           <td class="p-2">${r.tipo}</td>
           <td class="p-2">${r.nome||'-'}</td>
-          <td class="p-2">${r.whatsapp||'-'} ${r.whatsapp?`<button data-copy="${r.whatsapp}" class="btn ml-2 text-xs px-2 py-1 border rounded">copiar</button>`:''}</td>
           <td class="p-2">
-            <span contenteditable class="editable rounded px-1 hover:bg-slate-100" data-id="${r.id}" data-field="cidade">${r.cidade||''}</span>
+            ${(r.whatsapp||'-')}
+            ${r.whatsapp?`<button data-copy="${r.whatsapp}" class="btn ml-2 text-xs px-2 py-1 border rounded">copiar</button>`:''}
           </td>
+          <td class="p-2">${r.cidade||'-'}</td>
           <td class="p-2">${r.tempo||'-'}</td>
-          <td class="p-2">
-            <span contenteditable class="editable rounded px-1 hover:bg-slate-100" data-id="${r.id}" data-field="limite">${r.limite!=null?r.limite:''}</span>
-          </td>
+          <td class="p-2">${r.limite!=null?r.limite:'-'}</td>
           <td class="p-2">
             <select data-id="${r.id}" class="status border rounded px-2 py-1">
               ${['Novo','Em contato','Qualificado','Fechado','Descartado'].map(s=>`<option ${s===r.status?'selected':''}>${s}</option>`).join('')}
@@ -297,127 +291,107 @@
           <td class="p-2">
             ${r.whatsapp?`<a target="_blank" class="btn text-[var(--brand)] underline" href="https://wa.me/${phone(WPP)}?text=${encodeURIComponent('Olá '+(r.nome||'')+', recebi sua análise da Recupera Crédito. Podemos falar agora?')}">WhatsApp</a>`:''}
           </td>
-        </tr>`
+        </tr>`;
       }).join('');
-      lastIds=new Set(filtered.map(r=>r.id))
+
+      lastIds = new Set(rows.map(r=>r.id));
     }
 
-    // ========= FEED =========
-    function buildFeed(rows){
-      const feed=document.getElementById('feed');
-      const last=[...rows].sort((a,b)=> new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at)).slice(0,8);
-      feed.innerHTML= last.map(r=>`<div><b>${r.nome||'Sem nome'}</b> — ${r.status||'Novo'} <span class="text-slate-400">(${dt(r.updated_at||r.created_at)})</span></div>`).join('') || '<div class="text-slate-400">Sem atividades ainda.</div>';
-    }
-
-    // ========= KANBAN =========
-    const STAGES=['Novo','Em contato','Qualificado','Fechado','Descartado'];
-    function renderKanban(rows){
-      const byStatus=Object.fromEntries(STAGES.map(s=>[s,[]])); rows.forEach(r=>byStatus[r.status]?.push(r));
-      const wrap=document.getElementById('kanban');
-      wrap.innerHTML=STAGES.map(s=>`
-        <div class="card rounded-xl p-3">
-          <div class="flex items-center justify-between mb-2">
-            <div class="font-bold">${s}</div>
-            <span class="chip">${(byStatus[s]||[]).length}</span>
-          </div>
-          <div class="kan-col space-y-2" data-stage="${s}">
-            ${(byStatus[s]||[]).slice(0,40).map(r=>`
-              <div draggable="true" class="drag-card border rounded p-2 bg-white/80 flex items-center justify-between gap-2" data-id="${r.id}">
-                <div>
-                  <div class="font-medium leading-tight">${r.nome||'Sem nome'}</div>
-                  <div class="text-xs text-slate-500">${r.cidade||'—'} • ${r.whatsapp||''}</div>
-                </div>
-                <a class="text-[var(--brand)] text-xs underline" target="_blank" href="https://wa.me/${phone(WPP)}?text=${encodeURIComponent('Olá '+(r.nome||'')+', recebi sua análise. Podemos falar?')}">WPP</a>
-              </div>
-            `).join('')}
-          </div>
-        </div>`).join('');
-
-      wrap.querySelectorAll('.drag-card').forEach(el=>{
-        el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.id); setTimeout(()=>el.classList.add('opacity-40'),0)});
-        el.addEventListener('dragend',()=>el.classList.remove('opacity-40'));
-      });
-      wrap.querySelectorAll('.kan-col').forEach(col=>{
-        col.addEventListener('dragover',e=>{e.preventDefault(); col.classList.add('drag-over')});
-        col.addEventListener('dragleave',()=>col.classList.remove('drag-over'));
-        col.addEventListener('drop',async e=>{
-          e.preventDefault(); col.classList.remove('drag-over');
-          const id=e.dataTransfer.getData('text/plain'); const status=col.dataset.stage;
-          try{
-            const r=await fetch('/api/leads/'+id,{method:'PATCH',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
-            if(r.ok){const row=ALL.find(x=>x.id===id); if(row){row.status=status; row.updated_at=new Date().toISOString()} applyFilters(); toast('Movido para '+status)}
-            else toast('Falha ao mover','err');
-          }catch(_){toast('Falha ao mover','err')}
-        });
-      });
-    }
-
-    // ========= LOAD =========
     async function fetchLeads(playPing=true){
       try{
-        const r=await fetch('/api/leads',{credentials:'include'});
-        if(!r.ok){appBox.classList.add('hidden'); loginBox.classList.remove('hidden'); return}
-        const rows=await r.json(); const before=new Set(ALL.map(x=>x.id)); ALL=rows;
+        const r = await fetch('/api/leads');
+        if(!r.ok){ // não autenticado
+          appBox.classList.add('hidden'); loginBox.classList.remove('hidden'); return;
+        }
+        const rows = await r.json();
+        const before = new Set(ALL.map(x=>x.id));
+        ALL = rows;
         applyFilters();
-        if(playPing && rows.some(x=>!before.has(x.id))){try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.type='triangle';o.frequency.value=880;o.connect(g);g.connect(ctx.destination);o.start();g.gain.setValueAtTime(.06,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+.25);setTimeout(()=>o.stop(),260)}catch(e){}}
-      }catch(e){toast('Erro ao carregar dados','err')}
+
+        if(playPing && rows.some(x=>!before.has(x.id))){
+          try{
+            const ctx = new (window.AudioContext||window.webkitAudioContext)();
+            const o = ctx.createOscillator(); const g = ctx.createGain();
+            o.type='triangle'; o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
+            o.start(); g.gain.setValueAtTime(.06,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.25);
+            setTimeout(()=>o.stop(),260);
+          }catch(e){}
+        }
+      }catch(e){
+        toast('Erro ao carregar dados','err');
+      }
     }
 
     // ========= LOGIN/LOGOUT =========
-    document.getElementById('form-login').addEventListener('submit',async e=>{
-      e.preventDefault(); loginErr.classList.add('hidden');
-      const d=Object.fromEntries(new FormData(e.target).entries());
+    async function login(data){
       try{
-        const r=await fetch('/login',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
-        if(r.ok){loginBox.classList.add('hidden'); appBox.classList.remove('hidden'); loading.classList.remove('hidden'); emptyEl.classList.add('hidden'); tbody.innerHTML=''; await fetchLeads(false); loop(); toast('Bem-vindo!')}
-        else {loginErr.classList.remove('hidden');}
-      }catch(_){loginErr.textContent='Falha na autenticação'; loginErr.classList.remove('hidden')}
+        const r = await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+        if(r.ok){
+          loginBox.classList.add('hidden');
+          appBox.classList.remove('hidden');
+          loading.classList.remove('hidden'); emptyEl.classList.add('hidden'); tbody.innerHTML='';
+          await fetchLeads(false);
+          loop();
+          toast('Bem-vindo!');
+        }else{
+          toast('Login inválido','err');
+        }
+      }catch(e){
+        toast('Falha na autenticação','err');
+      }
+    }
+
+    // ========= EVENTOS =========
+    document.getElementById('form-login').addEventListener('submit', e=>{
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(e.target).entries());
+      login(d);
     });
-    document.getElementById('btn-sair').addEventListener('click',async ()=>{await fetch('/logout',{method:'POST',credentials:'include'});clearInterval(poller);clearInterval(timer);appBox.classList.add('hidden');loginBox.classList.remove('hidden')});
 
-    // ========= EVENTS =========
-    document.getElementById('btn-refresh').addEventListener('click',()=>{countdown=10;fetchLeads(false)});
-    document.getElementById('btn-export').addEventListener('click',()=>exportCSV()); qaCsv.addEventListener('click',()=>exportCSV());
-    function exportCSV(){if(!ALL.length){toast('Sem dados para exportar','err');return} const blob=new Blob([csv(ALL)],{type:'text/csv;charset=utf-8;'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='leads.csv'; a.click()}
-    [q,fTipo,fStatus,sortSel].forEach(el=>el.addEventListener('input',applyFilters));
-    document.addEventListener('click',e=>{const btn=e.target.closest('[data-copy]'); if(btn){navigator.clipboard.writeText(btn.getAttribute('data-copy'));btn.textContent='copiado!';setTimeout(()=>btn.textContent='copiar',900)}});
+    document.getElementById('btn-sair').addEventListener('click', async ()=>{
+      await fetch('/logout',{method:'POST'});
+      clearInterval(poller);
+      appBox.classList.add('hidden'); loginBox.classList.remove('hidden');
+    });
 
-    // atualizar status pelo select
-    document.addEventListener('change',async e=>{
+    document.getElementById('btn-refresh').addEventListener('click', ()=> fetchLeads(false));
+
+    document.getElementById('btn-export').addEventListener('click', ()=>{
+      if(!ALL.length){ toast('Sem dados para exportar','err'); return; }
+      const blob = new Blob([csv(ALL)], {type:'text/csv;charset=utf-8;'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'leads.csv'; a.click();
+    });
+
+    [q,fTipo,fStatus,sortSel].forEach(el=> el.addEventListener('input', applyFilters));
+
+    document.addEventListener('change', async e=>{
       if(e.target.classList.contains('status')){
-        const id=e.target.dataset.id, status=e.target.value;
-        try{const r=await fetch('/api/leads/'+id,{method:'PATCH',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
-          if(r.ok){const row=ALL.find(x=>x.id===id); if(row){row.status=status; row.updated_at=new Date().toISOString()} applyFilters(); toast('Status atualizado')}
-          else toast('Erro ao atualizar status','err');
-        }catch(_){toast('Erro ao atualizar status','err')}
+        const id = e.target.dataset.id, status = e.target.value;
+        try{
+          const r = await fetch('/api/leads/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});
+          if(r.ok){
+            const row = ALL.find(x=>x.id===id); if(row){ row.status = status; applyFilters(); }
+            toast('Status atualizado');
+          }else{
+            toast('Erro ao atualizar status','err');
+          }
+        }catch(_){ toast('Erro ao atualizar status','err'); }
       }
     });
 
-    // edição inline (cidade/limite)
-    document.addEventListener('keydown',e=>{
-      if(e.target.classList.contains('editable') && e.key==='Enter'){e.preventDefault(); e.target.blur()}
+    document.addEventListener('click', e=>{
+      const btn = e.target.closest('[data-copy]');
+      if(btn){
+        navigator.clipboard.writeText(btn.getAttribute('data-copy'));
+        btn.textContent = 'copiado!';
+        setTimeout(()=>btn.textContent='copiar', 900);
+      }
     });
-    document.addEventListener('blur',async e=>{
-      if(!e.target.classList.contains('editable'))return;
-      const id=e.target.dataset.id, field=e.target.dataset.field; let val=e.target.innerText.trim();
-      if(field==='limite'){val = val===''?null:Number(val.replace(/[^\d.-]/g,'')); if(val!==null && isNaN(val)){toast('Valor inválido','err'); e.target.innerText=''; return;}}
-      try{
-        const r=await fetch('/api/leads/'+id,{method:'PATCH',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({[field]:val})});
-        if(r.ok){const row=ALL.find(x=>x.id===id); if(row){row[field]=val; row.updated_at=new Date().toISOString()} toast('Salvo');}
-        else toast('Erro ao salvar','err');
-      }catch(_){toast('Erro ao salvar','err')}
-    },true);
 
-    // Ações rápidas
-    qaNovos.addEventListener('click',()=>{fStatus.value='Novo';applyFilters();window.scrollTo({top:0,behavior:'smooth'})});
-    qaLimpar.addEventListener('click',()=>{q.value='';fTipo.value='';fStatus.value='';sortSel.value='created_at:desc';applyFilters()});
-    qaForm.href=FORM_LINK; qaForm.addEventListener('click',e=>{e.preventDefault();navigator.clipboard.writeText(FORM_LINK);toast('Link de análise copiado!')});
-    qaWpp.href=`https://wa.me/${phone(WPP)}?text=${encodeURIComponent('Olá! Atendimento Recupera Crédito.')}`;
+    // ========= LOOP AUTO-REFRESH =========
+    function loop(){ clearInterval(poller); poller = setInterval(fetchLeads, 10000); }
 
-    // ========= LOOP =========
-    function loop(){clearInterval(poller);poller=setInterval(()=>{countdown=10;fetchLeads()},10000); clearInterval(timer); timer=setInterval(()=>{countdown--; if(countdown<=0)countdown=10; const t='Atualiza em '+countdown+'s'; refreshBadge.textContent=t; refreshBadge2.textContent=t;},1000); countdown=10; const t='Atualiza em 10s'; refreshBadge.textContent=t; refreshBadge2.textContent=t}
-
-    // tenta carregar se já houver sessão
+    // tenta carregar se já há sessão
     fetchLeads(false);
   </script>
 </body>
